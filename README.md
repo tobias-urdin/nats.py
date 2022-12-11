@@ -18,6 +18,57 @@ Should be compatible with at least [Python +3.7](https://docs.python.org/3.7/lib
 pip install nats-py
 ```
 
+## Asynchronous or synchronous client
+
+You can request a asyncio based or synchronous client.
+
+```python
+import asyncio
+import nats
+
+
+async def main():
+    nc = await nats.connect('demo.nats.io')
+
+    async def handler(msg):
+        print(f'Received a message on {msg.subject} {msg.reply}: {msg.data}')
+        await msg.respond(b'OK')
+
+    sub = await nc.subscribe('help.please', cb=handler)
+
+    resp = await nc.request('help.please', b'help')
+    print('Response:', resp)
+
+    await nc.close()
+
+
+if __name__ == '__main__':
+    asyncio.run(main())
+```
+
+```python
+import nats
+
+
+def main():
+    nc = nats.sync_connect('demo.nats.io')
+
+    def handler(msg):
+        print(f'Received a message on {msg.subject} {msg.reply}: {msg.data}')
+        msg.respond(b'OK')
+
+    sub = nc.subscribe('help.please', cb=handler)
+
+    resp = nc.request('help.please', b'help')
+    print('Response:', resp)
+
+    nc.close()
+
+
+if __name__ == '__main__':
+    main()
+```
+
 ## Getting started
 
 ```python
