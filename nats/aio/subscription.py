@@ -22,6 +22,7 @@ from typing import (
     Optional,
 )
 
+from nats.common import subscription as common_sub
 from nats import errors
 # Default Pending Limits of Subscriptions
 from nats.aio.msg import Msg
@@ -29,11 +30,12 @@ from nats.aio.msg import Msg
 if TYPE_CHECKING:
     from nats.js import JetStreamContext
 
-DEFAULT_SUB_PENDING_MSGS_LIMIT = 512 * 1024
-DEFAULT_SUB_PENDING_BYTES_LIMIT = 128 * 1024 * 1024
+
+DEFAULT_SUB_PENDING_MSGS_LIMIT = common_sub.DEFAULT_SUB_PENDING_MSGS_LIMIT
+DEFAULT_SUB_PENDING_BYTES_LIMIT = common_sub.DEFAULT_SUB_PENDING_BYTES_LIMIT
 
 
-class Subscription:
+class Subscription(common_sub.Subscription):
     """
     A Subscription represents interest in a particular subject.
 
@@ -65,9 +67,12 @@ class Subscription:
         cb: Optional[Callable[['Msg'], Awaitable[None]]] = None,
         future: Optional[asyncio.Future] = None,
         max_msgs: int = 0,
-        pending_msgs_limit: int = DEFAULT_SUB_PENDING_MSGS_LIMIT,
-        pending_bytes_limit: int = DEFAULT_SUB_PENDING_BYTES_LIMIT,
+        pending_msgs_limit: int = common_sub.DEFAULT_SUB_PENDING_MSGS_LIMIT,
+        pending_bytes_limit: int = common_sub.DEFAULT_SUB_PENDING_BYTES_LIMIT,
     ) -> None:
+        super(Subscription, self).__init__(conn, id, subject, queue, cb,
+                                           future, max_msgs, pending_msgs_limit,
+                                           pending_bytes_limit)
         self._conn = conn
         self._id = id
         self._subject = subject

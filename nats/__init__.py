@@ -14,6 +14,7 @@
 from typing import List, Union
 
 from .aio.client import Client as NATS
+from .sync.client import Client as SyncNATS
 
 
 async def connect(
@@ -42,4 +43,32 @@ async def connect(
     """
     nc = NATS()
     await nc.connect(servers, **options)
+    return nc
+
+
+def sync_connect(
+    servers: Union[str, List[str]] = ["nats://localhost:4222"],
+    **options
+) -> SyncNATS:
+    """
+    :param servers: List of servers to connect.
+    :param options: NATS connect options.
+
+    ::
+
+        import nats
+
+        def main():
+            # Connect to NATS Server.
+            nc = nats.sync_connect('demo.nats.io')
+            nc.publish('foo', b'Hello World!')
+            nc.flush()
+            nc.close()
+
+        if __name__ == '__main__':
+            main()
+
+    """
+    nc = SyncNATS()
+    nc.connect(servers, **options)
     return nc
