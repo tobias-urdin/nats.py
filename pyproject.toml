@@ -31,7 +31,7 @@ classifiers = [
 zip-safe = true
 
 [tool.setuptools.dynamic]
-version = {attr = "nats.aio.client.__version__"}
+version = {attr = "nats.common.client.__version__"}
 
 [tool.setuptools.packages.find]
 include = ["nats*"]  # package names should match these glob patterns (["*"] by default)
